@@ -12,7 +12,7 @@ namespace Restaurants.Application.Restaurants.Commands.DeleteRestaurant
     {
         public async Task Handle(DeleteRestaurantCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Deleting restaurant with id: {RestaurantId}", request.Id);
+            _logger.LogWarning("Deleting restaurant with id: {RestaurantId}", request.Id);
             var restaurant = await _restaurantsRepository.GetByIdAsync(request.Id)
                 ?? throw new NotFoundException(nameof(Restaurant), request.Id.ToString());
            

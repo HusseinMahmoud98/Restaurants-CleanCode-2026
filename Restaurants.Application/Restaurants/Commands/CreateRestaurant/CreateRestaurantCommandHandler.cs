@@ -1,20 +1,13 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Restaurants.Application.Restaurants.Dtos;
 using Restaurants.Domain.Entities;
 using Restaurants.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Restaurants.Application.Restaurants.Commands.CreateRestaurant
 {
-    public class CreateRestaurantCommandHandler(ILogger<CreateRestaurantCommandHandler> _logger, 
+    public class CreateRestaurantCommandHandler(
+        ILogger<CreateRestaurantCommandHandler> _logger, 
         IMapper _mapper, 
         IRestaurantsRepository _restaurantsRepository) 
         : IRequestHandler<CreateRestaurantCommand, int>
@@ -32,7 +25,7 @@ namespace Restaurants.Application.Restaurants.Commands.CreateRestaurant
 
             await _restaurantsRepository.CreateAsync(restaurant);
 
-            _logger.LogInformation("restaurant created successfully...");
+            _logger.LogInformation("Restaurant created successfully...");
 
             return restaurant.Id;
         }

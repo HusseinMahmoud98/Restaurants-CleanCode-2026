@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Restaurants.Application.Restaurants.Dtos
 {
@@ -16,6 +13,7 @@ namespace Restaurants.Application.Restaurants.Dtos
         [Required(ErrorMessage = "Please provide a valid category")]
         public string Category { get; set; } = default!;
         public bool HasDelivery { get; set; }
+        [Required]
         [EmailAddress]
         public string? ContactEmail { get; set; }
         [Phone(ErrorMessage = "Please provide a valid contact number")]

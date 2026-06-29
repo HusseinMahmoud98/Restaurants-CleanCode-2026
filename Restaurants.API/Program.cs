@@ -3,6 +3,10 @@ using Restaurants.Infrastructure.Seeders;
 using Restaurants.Application.Extensions;
 using Serilog;
 using Restaurants.API.Middlewares;
+using Restaurants.Domain.Entities;
+using Microsoft.OpenApi.Models;
+using System.Security.Cryptography.Xml;
+using Restaurants.API.Extensions;
 
 
 namespace Restaurants.API
@@ -13,29 +17,9 @@ namespace Restaurants.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddScoped<ErrorHandlingMiddleware>();
-            builder.Services.AddScoped<RequestTimeLoggingMiddleware>();
-
+            builder.AddPresenaton();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
-            //builder.Host.UseSerilog((context, configuration) =>
-            //{
-            //    configuration
-            //    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            //    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Information)
-            //    .WriteTo.File("Logs/Restaurant-API-.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
-            //    .WriteTo.Console(outputTemplate: "[{Timestamp:dd-MM HH:mm:ss} {Level:u3}] | {SourceContent} | {NewLine}{Message:lj}{NewLine}{Exception}");
-            //});
-            builder.Host.UseSerilog((context, configuration) =>
-                configuration.ReadFrom.Configuration(context.Configuration));
 
             var app = builder.Build();
 
@@ -60,6 +44,9 @@ namespace Restaurants.API
 
             app.UseHttpsRedirection();
 
+            //ASP.NET Core Identity helper method that automatically wires up a set of minimal APIs for user authentication and management.
+            app.MapGroup("/api/Identity").MapIdentityApi<User>();
+
             app.UseAuthorization();
 
 
@@ -70,3 +57,4 @@ namespace Restaurants.API
         }
     }
 }
+
