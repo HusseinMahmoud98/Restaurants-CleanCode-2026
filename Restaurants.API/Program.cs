@@ -45,7 +45,9 @@ namespace Restaurants.API
             app.UseHttpsRedirection();
 
             //ASP.NET Core Identity helper method that automatically wires up a set of minimal APIs for user authentication and management.
-            app.MapGroup("/api/Identity").MapIdentityApi<User>();
+            app.MapGroup("/api/Identity")
+                .WithTags("Identity")
+                .MapIdentityApi<User>();
 
             app.UseAuthorization();
 

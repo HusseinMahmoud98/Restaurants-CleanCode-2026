@@ -1,6 +1,4 @@
-﻿
-using System.Diagnostics;
-using System.Globalization;
+﻿using System.Diagnostics;
 
 namespace Restaurants.API.Middlewares
 {
