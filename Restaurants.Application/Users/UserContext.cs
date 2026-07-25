@@ -8,12 +8,17 @@ namespace Restaurants.Application.Users
         public CurrentUser? GetCurrentUser()
         {
             var user = httpContextAccessor?.HttpContext?.User;
+
+            //This enforces that the method should only be called when a user context exists.
             if (user is null) throw new InvalidOperationException("User context is not present");
+
+            //This prevents treating anonymous users as valid.
             if (user.Identity is null || !user.Identity.IsAuthenticated) return null;
 
+            //Note: Each claim has a type and a value. So we filter by the claim type and then select the value.
             var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
             var email = user.FindFirst(c => c.Type == ClaimTypes.Email)!.Value;
-            var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role)!.Select(c => c.Value);
+            var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
 
             return new CurrentUser(userId, email, roles);
         }

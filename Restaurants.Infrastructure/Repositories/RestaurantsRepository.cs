@@ -37,5 +37,23 @@ namespace Restaurants.Infrastructure.Repositories
             _dbContext.Update(restaurant);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<(IEnumerable<Restaurant>, int)> GetAllAsync(string? searchPhrase, int pageSize,int pageNumber)
+        { 
+            searchPhrase = searchPhrase?.ToLower();
+
+            var baseQuery = _dbContext.Restaurants
+                .Where(r => (string.IsNullOrWhiteSpace(searchPhrase)) || r.Name.ToLower().Contains(searchPhrase) || r.Description.ToLower().Contains(searchPhrase!));
+                
+            var totalCount = await baseQuery.CountAsync();
+
+            var restaurant = await _dbContext.Restaurants.Include(r => r.Dishes)
+                .Where(r => (string.IsNullOrWhiteSpace(searchPhrase)) || r.Name.ToLower().Contains(searchPhrase) || r.Description.ToLower().Contains(searchPhrase!))
+                .Skip(pageSize*(pageNumber-1))
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (restaurant, totalCount);
+        }
     }
 }

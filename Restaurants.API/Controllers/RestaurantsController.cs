@@ -8,20 +8,21 @@ using Restaurants.Application.Restaurants.Dtos;
 using Restaurants.Application.Restaurants.Queries.GetAllRestaurants;
 using Restaurants.Application.Restaurants.Queries.GetRestaurantById;
 using Restaurants.Application.Restaurants.Services;
+using Restaurants.Domain.Constants;
 using System.Threading.Tasks;
 
 namespace Restaurants.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     public class RestaurantsController(IMediator _mediator) : ControllerBase
     {
         [HttpGet]
         //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RestaurantDto>))] //to see the schema of the return type in swagger in case u use IActionresult
-        public async Task<ActionResult<IEnumerable<RestaurantDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<RestaurantDto>>> GetAll([FromQuery] GetAllRestaurantsQuery query)
         {
-            var restaurants = await _mediator.Send(new GetAllRestaurantsQuery());
+            var restaurants = await _mediator.Send(query);
             return Ok(restaurants);
         }
 
@@ -34,6 +35,7 @@ namespace Restaurants.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Owner)]
         public async Task<IActionResult> CreateRestaurant([FromBody] CreateRestaurantCommand command)
         {
             int id = await _mediator.Send(command);

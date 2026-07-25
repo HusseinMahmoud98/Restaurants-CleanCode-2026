@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Restaurants.Domain.Entities;
@@ -20,6 +21,7 @@ namespace Restaurants.Infrastructure.Extensions
             });
 
             services.AddIdentityApiEndpoints<User>()
+                .AddRoles<IdentityRole>() //Add Identity Role Claim To User.Claims
                 .AddEntityFrameworkStores<RestaurantsDbContext>(); //Configures Identity to use Entity Framework Core with your RestaurantsDbContext as the backing store.
 
             services.AddScoped<IRestaurantSeeder, RestaurantSeeder>();
