@@ -15,47 +15,60 @@ namespace Restaurants.API
     {
         public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            builder.AddPresenaton();
-            builder.Services.AddInfrastructure(builder.Configuration);
-            builder.Services.AddApplication();
-
-            var app = builder.Build();
-
-            await using var scope = app.Services.CreateAsyncScope();
-            var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
-            await seeder.SeedAsync();
-
-            // Configure the HTTP request pipeline.
-            app.UseMiddleware<ErrorHandlingMiddleware>();
-            app.UseMiddleware<RequestTimeLoggingMiddleware>();
-
-            //used for logging middleware info like:
-            //HTTP [GET] /api/restaurants responded 200 in 150.1324 ms
-            app.UseSerilogRequestLogging();
-
-            if (app.Environment.IsDevelopment())
+            try
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                var builder = WebApplication.CreateBuilder(args);
+
+                builder.AddPresenaton();
+                builder.Services.AddInfrastructure(builder.Configuration);
+                builder.Services.AddApplication();
+
+                var app = builder.Build();
+
+                await using var scope = app.Services.CreateAsyncScope();
+                var seeder = scope.ServiceProvider.GetRequiredService<IRestaurantSeeder>();
+                await seeder.SeedAsync();
+
+                // Configure the HTTP request pipeline.
+                 app.UseMiddleware<ErrorHandlingMiddleware>();
+                app.UseMiddleware<RequestTimeLoggingMiddleware>();
+
+                //used for logging middleware info like:
+                //HTTP [GET] /api/restaurants responded 200 in 150.1324 ms
+                app.UseSerilogRequestLogging();
+
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
+
+
+                app.UseHttpsRedirection();
+
+                //ASP.NET Core Identity helper method that automatically wires up a set of minimal APIs for user authentication and management.
+                app.MapGroup("/api/Identity")
+                    .WithTags("Identity")
+                    .MapIdentityApi<User>();
+
+                app.UseAuthorization();
+
+
+                app.MapControllers();
+
+
+                app.Run();
             }
 
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application startup failed");
+            }
 
-            app.UseHttpsRedirection();
-
-            //ASP.NET Core Identity helper method that automatically wires up a set of minimal APIs for user authentication and management.
-            app.MapGroup("/api/Identity")
-                .WithTags("Identity")
-                .MapIdentityApi<User>();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-
-            app.Run();
+            finally
+            {
+                await Log.CloseAndFlushAsync();
+            }
         }
     }
 }

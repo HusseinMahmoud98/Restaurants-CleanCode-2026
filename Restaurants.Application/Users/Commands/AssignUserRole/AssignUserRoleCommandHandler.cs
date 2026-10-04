@@ -6,20 +6,25 @@ using Restaurants.Domain.Exceptions;
 
 namespace Restaurants.Application.Users.Commands.AssignUserRole
 {
+    //internal class AssignUserRoleCommandHandler(ILogger<AssignUserRoleCommandHandler> _logger,
+    //    IUserContext _userContext, IUserStore<User> _userStore)
+    //    : IRequestHandler<AssignUserRoleCommand>
     internal class AssignUserRoleCommandHandler(ILogger<AssignUserRoleCommandHandler> _logger,
-        IUserContext _userContext, IUserStore<User> _userStore)
+        UserManager<User> _userManager,
+        RoleManager<IdentityRole> _roleManager)
         : IRequestHandler<AssignUserRoleCommand>
     {
         public async Task Handle(AssignUserRoleCommand request, CancellationToken cancellationToken)
         {
-            var user = _userContext.GetCurrentUser();
-            _logger.LogInformation("Assigning role {Role} to user {UserId}", request, user!.Id);
-            var dbUser = await _userStore.FindByIdAsync(user.Id, cancellationToken);
+            _logger.LogInformation("Assigning user role {@Request}", request);
 
-            if (dbUser is null) throw new NotFoundException(nameof(User),user.Id);
+            var user = await _userManager.FindByEmailAsync(request.UserEmail)
+                ?? throw new NotFoundException(nameof(User), request.UserEmail);
 
-            //dbUser.
+            var role = await _roleManager.FindByNameAsync(request.RoleName)
+                ?? throw new NotFoundException(nameof(IdentityRole), request.RoleName);
 
+            await _userManager.AddToRoleAsync(user, role.Name!);
         }
     }
 }

@@ -7,9 +7,7 @@ using Restaurants.Application.Restaurants.Commands.UpdateRestaurant;
 using Restaurants.Application.Restaurants.Dtos;
 using Restaurants.Application.Restaurants.Queries.GetAllRestaurants;
 using Restaurants.Application.Restaurants.Queries.GetRestaurantById;
-using Restaurants.Application.Restaurants.Services;
 using Restaurants.Domain.Constants;
-using System.Threading.Tasks;
 
 namespace Restaurants.API.Controllers
 {
@@ -20,6 +18,8 @@ namespace Restaurants.API.Controllers
     {
         [HttpGet]
         //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<RestaurantDto>))] //to see the schema of the return type in swagger in case u use IActionresult
+        //[Authorize(Policy = CustomAuthorizationPolicy.CreatedAtLeastTwoRestaurants)]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<RestaurantDto>>> GetAll([FromQuery] GetAllRestaurantsQuery query)
         {
             var restaurants = await _mediator.Send(query);
@@ -27,7 +27,7 @@ namespace Restaurants.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        [Authorize(Policy = CustomAuthorizationPolicy.HasNationality)]
         public async Task<ActionResult<RestaurantDto>> GetById([FromRoute] int id)
         {
             var restaurant = await _mediator.Send(new GetRestaurantByIdQuery(id));

@@ -13,6 +13,7 @@ namespace Restaurants.Application.Dishes.Commands.UpdateDish
     {
         public async Task Handle(UpdateDishCommand request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Updating dish with id: {DishId} with {@UpdatedDish}", request.Id, request);
             var dish = _mapper.Map<Dish>(request);
             await _dishesRepository.UpdateAsync(dish);
         }

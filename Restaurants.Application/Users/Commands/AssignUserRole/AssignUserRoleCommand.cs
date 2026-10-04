@@ -3,7 +3,9 @@ using Restaurants.Domain.Constants;
 
 namespace Restaurants.Application.Users.Commands.AssignUserRole
 {
-    public class AssignUserRoleCommand(string Role) : IRequest
+    public class AssignUserRoleCommand : IRequest
     {
+        public string UserEmail { get; set; } = default!;
+        public string RoleName { get; set; } = default!;
     }
 }

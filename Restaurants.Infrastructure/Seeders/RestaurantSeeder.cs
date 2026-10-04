@@ -29,10 +29,16 @@ namespace Restaurants.Infrastructure.Seeders
 
         private IEnumerable<Restaurant> GetRestaurants()
         {
+            User owner = new User()
+            {
+                Email = "seed-user@test.com"
+            };
+
             return [
             new()
             {
                 Name = "KFC",
+                Owner = owner,
                 Category = "Fast Food",
                 Description =
                     "KFC (short for Kentucky Fried Chicken) is an American fast food restaurant chain headquartered in Louisville, Kentucky, that specializes in fried chicken.",
@@ -64,6 +70,7 @@ namespace Restaurants.Infrastructure.Seeders
             new()
             {
                 Name = "McDonald",
+                Owner = owner,
                 Category = "Fast Food",
                 Description =
                     "McDonald's Corporation (McDonald's), incorporated on December 21, 1964, operates and franchises McDonald's restaurants.",
@@ -81,10 +88,22 @@ namespace Restaurants.Infrastructure.Seeders
         }
 
         private IEnumerable<IdentityRole> GetRoles()
-        { 
-            return [ new(UserRoles.User),
-                new(UserRoles.Owner),
-                new(UserRoles.Admin)];
+        {
+            return [
+                new(UserRoles.User)
+                {
+                    NormalizedName = UserRoles.User.ToUpper()
+                },
+
+                new(UserRoles.Owner)
+                {
+                    NormalizedName = UserRoles.Owner.ToUpper()
+                },
+
+                new(UserRoles.Admin)
+                { 
+                    NormalizedName = UserRoles.Admin.ToUpper() 
+                }];
         }  
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Restaurants.Domain.Constants;
 using Restaurants.Domain.Entities;
 using Restaurants.Domain.Repositories;
 using Restaurants.Infrastructure.Persistence;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Restaurants.Infrastructure.Repositories
 {
@@ -38,8 +39,8 @@ namespace Restaurants.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<(IEnumerable<Restaurant>, int)> GetAllAsync(string? searchPhrase, int pageSize,int pageNumber)
-        { 
+        public async Task<(IEnumerable<Restaurant>, int)> GetAllAsync(string? searchPhrase, int pageSize,int pageNumber, string? sortBy, SortingDirection sortingDirection)
+        {
             searchPhrase = searchPhrase?.ToLower();
 
             var baseQuery = _dbContext.Restaurants
@@ -47,7 +48,23 @@ namespace Restaurants.Infrastructure.Repositories
                 
             var totalCount = await baseQuery.CountAsync();
 
-            var restaurant = await _dbContext.Restaurants.Include(r => r.Dishes)
+            if (sortBy != null)
+            {
+                var columnSelector = new Dictionary<string, Expression<Func<Restaurant, object>>>
+                {
+                    {nameof(Restaurant.Name), r => r.Name},
+                    {nameof(Restaurant.Description), r => r.Description},
+                    {nameof(Restaurant.Category), r => r.Category}
+                };
+
+                var selectedColumn = columnSelector[sortBy];
+
+                baseQuery = sortingDirection == SortingDirection.Ascending
+                    ? baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
+
+            var restaurant = await baseQuery.Include(r => r.Dishes)
                 .Where(r => (string.IsNullOrWhiteSpace(searchPhrase)) || r.Name.ToLower().Contains(searchPhrase) || r.Description.ToLower().Contains(searchPhrase!))
                 .Skip(pageSize*(pageNumber-1))
                 .Take(pageSize)

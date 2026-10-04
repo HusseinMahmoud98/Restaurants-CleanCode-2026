@@ -5,6 +5,7 @@ using Restaurants.Application.Common;
 using Restaurants.Application.Restaurants.Dtos;
 using Restaurants.Domain.Repositories;
 
+
 namespace Restaurants.Application.Restaurants.Queries.GetAllRestaurants
 {
     public class GetAllRestaurantsQueryHandler(IRestaurantsRepository _restaurantsRepository,
@@ -16,7 +17,7 @@ namespace Restaurants.Application.Restaurants.Queries.GetAllRestaurants
         {
             _logger.LogInformation("Getting all restaurants...");
 
-            var (restaurants, totalCount) = await _restaurantsRepository.GetAllAsync(request.SearchPhrase, request.PageSize, request.PageNumber);
+            var (restaurants, totalCount) = await _restaurantsRepository.GetAllAsync(request.SearchPhrase, request.PageSize, request.PageNumber, request.SortBy, request.SortingDirection);
             var restaurantsDto = _mapper.Map<IEnumerable<RestaurantDto>>(restaurants);
 
             return new PagedResult<RestaurantDto>(restaurantsDto, totalCount, request.PageSize, request.PageNumber);

@@ -1,10 +1,4 @@
 ﻿using FluentValidation;
-using Restaurants.Application.Restaurants.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Restaurants.Application.Restaurants.Commands.CreateRestaurant
 {
@@ -18,33 +12,15 @@ namespace Restaurants.Application.Restaurants.Commands.CreateRestaurant
             RuleFor(request => request.Name)
                 .Length(3, 100);
 
-            //RuleFor(dto => dto.Description)
-            //    .NotEmpty().WithMessage("Description is required.");
-
-
-            //RuleFor(dto => dto.Category)
-            //    .NotEmpty()
-            //    .WithMessage("Category is required.");
-
+           
             RuleFor(request => request.Category)
                 .Must(validCategories.Contains)
                 .When(request => !string.IsNullOrWhiteSpace(request.Category))
                 .WithMessage($"Invalid category, please choose from the valid categories:\n{string.Join(", ", validCategories)}.");
 
-            //.Custom((value, context) =>
-            //{
-            //    var isValidCategory = validCategories.Contains(value);
-
-            //    if (!isValidCategory)
-            //    {
-            //        context.AddFailure("Category", "Invalid category, please choose from the valid categories.");
-            //    }
-            //});
-
-
-            //RuleFor(dto => dto.ContactEmail)
-            //    .EmailAddress()
-            //    .WithMessage("Please insert a valid email address");
+            RuleFor(dto => dto.ContactEmail)
+                .EmailAddress()
+                .WithMessage("Please insert a valid email address");
 
 
             RuleFor(request => request.PostalCode)

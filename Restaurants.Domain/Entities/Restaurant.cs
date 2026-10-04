@@ -11,5 +11,7 @@
         public string? ContactNumber { get; set; }
         public Address? Address { get; set; }
         public List<Dish> Dishes { get; set; } = new();
+        public User Owner { set; get; } = default!;
+        public string OwnerId { get; set; } = default!;
     }
 }

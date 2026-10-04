@@ -1,20 +1,17 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
+using Restaurants.Domain.Constants;
 using Restaurants.Domain.Entities;
 using Restaurants.Domain.Exceptions;
+using Restaurants.Domain.Interfaces;
 using Restaurants.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Restaurants.Application.Dishes.Commands.DeleteDish
 {
     public class DeleteDishCommandHandler(ILogger<DeleteDishCommandHandler> _logger,
         IDishesRepository _dishesRepository,
-        IRestaurantsRepository _restaurantsRepository)
+        IRestaurantsRepository _restaurantsRepository,
+        IRestaurantAuthorizationEvaluator _restaurantAuthorizationService )
         : IRequestHandler<DeleteDishesCommand>
     {
         public async Task Handle(DeleteDishesCommand request, CancellationToken cancellationToken)
@@ -24,6 +21,8 @@ namespace Restaurants.Application.Dishes.Commands.DeleteDish
             var restaurant = await _restaurantsRepository.GetByIdAsync(request.RestaurantId)
                  ?? throw new NotFoundException(nameof(Restaurant), request.RestaurantId.ToString());
 
+            if (!_restaurantAuthorizationService.Authorize(restaurant, ResourceOperation.Update))
+                throw new ForbidException();
             //Note: without .ToList() the code will crash in the second iteration as we are modifiing the original list and thats forbiden in foreach
             //foreach (var dish in restaurant.Dishes.ToList())
             //{

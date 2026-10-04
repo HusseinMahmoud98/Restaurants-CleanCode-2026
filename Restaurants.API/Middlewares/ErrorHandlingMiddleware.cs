@@ -12,18 +12,36 @@ namespace Restaurants.API.Middlewares
             {
                 await next.Invoke(context);
             }
+
             catch(NotFoundException notFound)
             {
-                context.Response.StatusCode = 404;
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
                 await context.Response.WriteAsync(notFound.Message);
 
                 _logger.LogWarning(notFound.Message);
             }
+
+            catch (ForbidException forbid)
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync("Access forbidden");
+
+                _logger.LogWarning(forbid.Message);
+            }
+
+            catch (UnauthenticatedException unauthenticated)
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("User is not authenticated");
+
+                _logger.LogWarning(unauthenticated.Message);
+            }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
 
-                context.Response.StatusCode = 500;
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await context.Response.WriteAsync("Something went wrong!!");
             }
         }
