@@ -45,7 +45,7 @@ namespace Restaurants.Application.Restaurants.Commands.CreateRestaurant.Tests
             var result = validator.TestValidate(command);
 
             // assert
-            result.ShouldNotHaveValidationErrorFor(c => c.Name);
+            result.ShouldHaveValidationErrorFor(c => c.Name);
             result.ShouldHaveValidationErrorFor(c => c.Category);
             result.ShouldHaveValidationErrorFor(c => c.ContactEmail);
             result.ShouldHaveValidationErrorFor(c => c.PostalCode);
